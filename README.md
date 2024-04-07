@@ -1,5 +1,10 @@
 # ocp7_scoring_model_cloud
 
+## Presentation 
+
+This is an OpenClassrooms Data Science project: "deploy a credit scoring in the cloud". The purpose of the project is to create a credit scoring machine learning model, to monitor it using MLOps techniques, then to create a dashboard to visualize the results. 
+
+
 ## Overview
 
 This is your new Kedro project with Kedro-Viz and PySpark setup, which was generated using `kedro 0.19.3`.
