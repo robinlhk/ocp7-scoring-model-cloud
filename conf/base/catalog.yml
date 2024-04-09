@@ -94,9 +94,36 @@ previous_application_debug:
     sep: ','
     nrows: 1000
 
-preprocessed_df_debug:
-  filepath: data/02_intermediate/preprocessed_df.pq
+## Intermediate datasets in parquet format in the intermediate folder
+preprocess_train_df:
+  filepath: data/02_intermediate/preprocess_train_df.parquet
   type: pandas.ParquetDataset
-  load_args:
-    sep: ','
-    nrows: 1000
+
+bureau_agg:
+  filepath: data/02_intermediate/bureau_agg.parquet
+  type: pandas.ParquetDataset
+
+previous_application_agg:
+  filepath: data/02_intermediate/previous_application_agg.parquet
+  type: pandas.ParquetDataset
+
+pos_cash_balance_agg:
+  filepath: data/02_intermediate/pos_cash_balance_agg.parquet
+  type: pandas.ParquetDataset
+
+installments_payments_agg:
+  filepath: data/02_intermediate/installments_payments_agg.parquet
+  type: pandas.ParquetDataset
+
+credit_card_balance_agg:
+  filepath: data/02_intermediate/credit_card_balance_agg.parquet
+  type: pandas.ParquetDataset
+
+## Preprocessed datasets in parquet format in the primary folder
+preprocessed_df:
+  filepath: data/03_primary/preprocessed_df.parquet
+  type: pandas.ParquetDataset
+
+preprocessed_df_debug:
+  filepath: data/03_primary/preprocessed_df_debug.parquet
+  type: pandas.ParquetDataset
