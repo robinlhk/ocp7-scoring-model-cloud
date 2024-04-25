@@ -127,3 +127,21 @@ preprocessed_df:
 preprocessed_df_debug:
   filepath: data/03_primary/preprocessed_df_debug.parquet
   type: pandas.ParquetDataset
+
+## Dataset after feature selection in the 04_feature folder
+selected_features_df:
+  filepath: data/04_feature/selected_features_df.parquet
+  type: pandas.ParquetDataset
+
+selected_features_df_debug:
+  filepath: data/04_feature/selected_features_df_debug.parquet
+  type: pandas.ParquetDataset
+
+## Features processed for model input in the 05_model_input folder
+processed_features_df:
+  filepath: data/05_model_input/processed_features_df.parquet
+  type: pandas.ParquetDataset
+
+balanced_df:
+  filepath: data/05_model_input/balanced_df.parquet
+  type: pandas.ParquetDataset
