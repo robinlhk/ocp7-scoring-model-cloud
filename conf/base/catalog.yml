@@ -145,3 +145,9 @@ processed_features_df:
 balanced_df:
   filepath: data/05_model_input/balanced_df.parquet
   type: pandas.ParquetDataset
+
+## Saving models in the 06_models folder
+first_model_logistic_regression:
+  filepath: data/06_models/model.pkl
+  type: pickle.PickleDataset
+  backend: pickle
