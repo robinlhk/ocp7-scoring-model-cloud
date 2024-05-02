@@ -19,3 +19,5 @@ scipy==1.11.4
 streamlit
 pyarrow
 kedro-mlflow
+mlflow
+streamlit
