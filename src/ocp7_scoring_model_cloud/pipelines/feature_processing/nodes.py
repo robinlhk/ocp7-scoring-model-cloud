@@ -5,6 +5,8 @@ generated using Kedro 0.19.5
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.impute import SimpleImputer
+import pandas as pd
+import numpy as np
 
 def get_clean_features(df):
     # Replace infinity values with nans

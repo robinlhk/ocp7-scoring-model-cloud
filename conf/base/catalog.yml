@@ -146,8 +146,21 @@ balanced_df:
   filepath: data/05_model_input/balanced_df.parquet
   type: pandas.ParquetDataset
 
+full_df_train:
+  filepath: data/05_model_input/full_df_train.parquet
+  type: pandas.ParquetDataset
+
 ## Saving models in the 06_models folder
 first_model_logistic_regression:
   filepath: data/06_models/model.pkl
   type: pickle.PickleDataset
   backend: pickle
+
+## Saving viz data in the 08_reporting folder
+viz_df_train:
+  filepath: data/08_reporting/viz_df_train.parquet
+  type: pandas.ParquetDataset
+
+viz_df_test:
+  filepath: data/08_reporting/viz_df_test.parquet
+  type: pandas.ParquetDataset
