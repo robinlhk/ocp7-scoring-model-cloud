@@ -14,7 +14,6 @@ train_df = pd.read_parquet("data/08_reporting/viz_df_train.parquet")
 test_df = pd.read_parquet("data/08_reporting/viz_df_test.parquet")
 
 
-
 select_df_type = st.sidebar.selectbox(
     "Selectionnez le jeu de données", ["Train", "Test"]
 )
@@ -34,7 +33,6 @@ default_columns = [
 ]
 
 selected_row = df.loc[df["SK_ID_CURR"] == selected_id, default_columns]
-
 
 
 st.sidebar.write("Informations sur le client")
@@ -83,22 +81,57 @@ st.sidebar.dataframe(
 # col2.plotly_chart(fig8)
 # col1.plotly_chart(fig9)
 
-if st.button('Prédire la probabilité de défaut du client'):
+interest_rate = (
+    st.slider(
+        "Sélectionnez le taux d'intérêt moyen (en %)",
+        min_value=0.0,
+        max_value=10.0,
+        value=5.0,
+        step=0.1,
+    )
+    / 100
+)
+acceptable_proba = interest_rate / (1 + interest_rate)
+
+st.markdown(r"La probabilité de défaut telle que l'espérance de gain de la banque est positive : $$\mathbb{P}(D)\geq\frac{i}{1+i}$$ ")
+
+
+if st.button("Prédire la probabilité de défaut du client"):
     if select_df_type == "Train":
         full_df = pd.read_parquet("data/05_model_input/full_df_train.parquet")
         selected_full_df = full_df.loc[full_df["SK_ID_CURR"] == selected_id]
-    features = [f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]]
+    features = [
+        f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
+    ]
     df_query = selected_full_df[features]
     # st.write(df_query)
     # st.write(selected_full_df)
 
-    prediction = request_prediction(df_query, model_url="http://localhost:5000/invocations")
-    st.write(f"""D'après le modèle, la probabilité de défaut du client est de {round(prediction["predictions"][0][0], 2)}.""")
+    prediction = request_prediction(
+        df_query, model_url="http://localhost:5000/invocations"
+    )
+    proba_non_default = round(prediction["predictions"][0][0], 2)
+    proba_default = round(prediction["predictions"][0][1], 3)
+    st.write(
+        f"""D'après le modèle, la probabilité de défaut du client est de {proba_default*100}%."""
+    )
+    if proba_default > acceptable_proba:
+        st.markdown(
+            """
+            Etant donné le <span style="color:blue;">taux d'intérêt moyen</span>, il est recommandé de 
+            <span style="background-color:red; color:white;">ne pas accorder le prêt</span>.
+            """,
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            """
+            Etant donné le taux d'intérêt moyen, il est recommandé d'<span style="background-color:green; color:white;">accorder le prêt</span>.
+            """,
+            unsafe_allow_html=True
+        )
     st.write("Retour du modèle", prediction)
     st.write("Elements envoyés au modèle pour la prédiction", selected_full_df)
-
-
-
 
 
 # def main():
