@@ -120,12 +120,16 @@ credit_card_balance_agg:
   type: pandas.ParquetDataset
 
 ## Preprocessed datasets in parquet format in the primary folder
-preprocessed_df:
+preprocessed_train_df:
   filepath: data/03_primary/preprocessed_df.parquet
   type: pandas.ParquetDataset
 
 preprocessed_df_debug:
   filepath: data/03_primary/preprocessed_df_debug.parquet
+  type: pandas.ParquetDataset
+
+preprocessed_test_df:
+  filepath: data/03_primary/preprocessed_test_df.parquet
   type: pandas.ParquetDataset
 
 ## Dataset after feature selection in the 04_feature folder
@@ -150,11 +154,20 @@ full_df_train:
   filepath: data/05_model_input/full_df_train.parquet
   type: pandas.ParquetDataset
 
+full_df_test:
+    filepath: data/05_model_input/full_df_test.parquet
+    type: pandas.ParquetDataset
+
 ## Saving models in the 06_models folder
 first_model_logistic_regression:
   filepath: data/06_models/model.pkl
   type: pickle.PickleDataset
   backend: pickle
+
+## Model predictions in the 07_model_output folder
+kaggle_output_df:
+  filepath: data/07_model_output/kaggle_output_df.csv
+  type: pandas.CSVDataset
 
 ## Saving viz data in the 08_reporting folder
 viz_df_train:

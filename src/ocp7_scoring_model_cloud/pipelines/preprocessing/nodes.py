@@ -5,14 +5,6 @@ generated using Kedro 0.19.3
 
 import numpy as np
 import pandas as pd
-import gc
-import time
-from contextlib import contextmanager
-from lightgbm import LGBMClassifier
-from sklearn.metrics import roc_auc_score, roc_curve
-from sklearn.model_selection import KFold, StratifiedKFold
-import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
 import re
 
@@ -314,3 +306,15 @@ def join_datasets(
     )
     df = df.rename(columns=col_dict)
     return df
+
+def preprocess_merge_datasets(base_df, bureau_df, bureau_balance_df, previous_application_df, pos_cash_df, installments_payments_df, credit_card_balance_df):
+    preprocess_train_df = preprocess_application_train(base_df)
+    bureau_agg = preprocess_bureau_and_balance(bureau_df, bureau_balance_df)
+    previous_application_agg = preprocess_previous_applications(previous_application_df)
+    pos_agg = preprocess_pos_cash(pos_cash_df)
+    ins_agg = preprocess_installments_payments(installments_payments_df)
+    cc_agg = preprocess_credit_card_balance(credit_card_balance_df)
+
+    preprocessed_df = join_datasets(preprocess_train_df, bureau_agg, previous_application_agg, pos_agg, ins_agg, cc_agg)
+
+    return preprocessed_df

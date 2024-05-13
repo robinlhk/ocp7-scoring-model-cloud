@@ -42,44 +42,44 @@ st.sidebar.dataframe(
     ),
     hide_index=True,
 )
-#
-# # Define the charts
-# selected_age = df.loc[df["SK_ID_CURR"] == selected_id, "AGE"].values[0]
-# selected_amt_credit = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_CREDIT"].values[0]
-# selected_amt_income_total = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_INCOME_TOTAL"].values[0]
-# selected_amt_annuity = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_ANNUITY"].values[0]
-# selected_amt_goods_price = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_GOODS_PRICE"].values[0]
-# selected_ext_source_1 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_1"].values[0]
-# selected_ext_source_2 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_2"].values[0]
-# selected_ext_source_3 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_3"].values[0]
-# selected_time_current_job_years = df.loc[df["SK_ID_CURR"] == selected_id, "TIME_CURRENT_JOB_YEARS"].values[0]
-#
-# fig1 = histo_chart(df, "AGE", "Distribution de l'âge des clients", True, selected_age, nbins=10)
-# fig9 = histo_chart(df, "TIME_CURRENT_JOB_YEARS", "Distribution de l'ancienneté dans l'emploi", True, selected_time_current_job_years, nbins=30)
-# fig2 = histo_chart(df, "AMT_CREDIT", "Distribution du montant du crédit", True, selected_amt_credit, nbins=50)
-# fig3 = histo_chart(df, "AMT_INCOME_TOTAL", "Distribution du revenu total", True, selected_amt_income_total, nbins=100)
-# fig4 = histo_chart(df, "AMT_ANNUITY", "Distribution de l'annuité", True, selected_amt_annuity, nbins=30)
-# fig5 = histo_chart(df, "AMT_GOODS_PRICE", "Distribution du prix des biens", True, selected_amt_goods_price, nbins=50)
-# fig6 = histo_chart(df, "EXT_SOURCE_1", "Distribution de l'EXT_SOURCE_1", True, selected_ext_source_1, nbins=50)
-# fig7 = histo_chart(df, "EXT_SOURCE_2", "Distribution de l'EXT_SOURCE_2", True, selected_ext_source_2, nbins=50)
-# fig8 = histo_chart(df, "EXT_SOURCE_3", "Distribution de l'EXT_SOURCE_3", True, selected_ext_source_3, nbins=50)
-#
-# expander1 = st.expander(
-#     "📈 Statistiques descriptives : le client dans l'ensemble de la population",
-#     expanded=False,
-# )
-# col1, col2 = expander1.columns(2, gap="small")
-# # Display the selected row
-#
-# col1.plotly_chart(fig1)
-# col2.plotly_chart(fig2)
-# col1.plotly_chart(fig3)
-# col2.plotly_chart(fig4)
-# col1.plotly_chart(fig5)
-# col2.plotly_chart(fig6)
-# col1.plotly_chart(fig7)
-# col2.plotly_chart(fig8)
-# col1.plotly_chart(fig9)
+
+# Define the charts
+selected_age = df.loc[df["SK_ID_CURR"] == selected_id, "AGE"].values[0]
+selected_amt_credit = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_CREDIT"].values[0]
+selected_amt_income_total = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_INCOME_TOTAL"].values[0]
+selected_amt_annuity = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_ANNUITY"].values[0]
+selected_amt_goods_price = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_GOODS_PRICE"].values[0]
+selected_ext_source_1 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_1"].values[0]
+selected_ext_source_2 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_2"].values[0]
+selected_ext_source_3 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_3"].values[0]
+selected_time_current_job_years = df.loc[df["SK_ID_CURR"] == selected_id, "TIME_CURRENT_JOB_YEARS"].values[0]
+
+fig1 = histo_chart(df, "AGE", "Distribution de l'âge des clients", True, selected_age, nbins=10)
+fig9 = histo_chart(df, "TIME_CURRENT_JOB_YEARS", "Distribution de l'ancienneté dans l'emploi", True, selected_time_current_job_years, nbins=30)
+fig2 = histo_chart(df, "AMT_CREDIT", "Distribution du montant du crédit", True, selected_amt_credit, nbins=50)
+fig3 = histo_chart(df, "AMT_INCOME_TOTAL", "Distribution du revenu total", True, selected_amt_income_total, nbins=100)
+fig4 = histo_chart(df, "AMT_ANNUITY", "Distribution de l'annuité", True, selected_amt_annuity, nbins=30)
+fig5 = histo_chart(df, "AMT_GOODS_PRICE", "Distribution du prix des biens", True, selected_amt_goods_price, nbins=50)
+fig6 = histo_chart(df, "EXT_SOURCE_1", "Distribution de l'EXT_SOURCE_1", True, selected_ext_source_1, nbins=50)
+fig7 = histo_chart(df, "EXT_SOURCE_2", "Distribution de l'EXT_SOURCE_2", True, selected_ext_source_2, nbins=50)
+fig8 = histo_chart(df, "EXT_SOURCE_3", "Distribution de l'EXT_SOURCE_3", True, selected_ext_source_3, nbins=50)
+
+expander1 = st.expander(
+    "📈 Statistiques descriptives : le client dans l'ensemble de la population",
+    expanded=False,
+)
+col1, col2 = expander1.columns(2, gap="small")
+# Display the selected row
+
+col1.plotly_chart(fig1)
+col2.plotly_chart(fig2)
+col1.plotly_chart(fig3)
+col2.plotly_chart(fig4)
+col1.plotly_chart(fig5)
+col2.plotly_chart(fig6)
+col1.plotly_chart(fig7)
+col2.plotly_chart(fig8)
+col1.plotly_chart(fig9)
 
 interest_rate = (
     st.slider(

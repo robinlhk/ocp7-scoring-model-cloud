@@ -21,7 +21,9 @@ def get_clean_features(df):
 
 def process_features_for_ml(df, imputation_strategy='median'):
     # Drop the target from the training data
-    train = df.drop(columns=['TARGET', 'SK_ID_CURR'])
+    if 'TARGET' in df.columns:
+        train = df.drop(columns=['TARGET'])
+    train = df.drop(columns=['SK_ID_CURR'])
 
     # Extract feature names
     feature_names = list(train.columns)
@@ -37,5 +39,8 @@ def process_features_for_ml(df, imputation_strategy='median'):
     train = scaler.fit_transform(train)
 
     print('Training Features shape: ', train.shape)
-
-    return train, feature_names
+    df1 = pd.DataFrame(train, columns=feature_names)
+    df1['SK_ID_CURR'] = df['SK_ID_CURR']
+    if 'TARGET' in df.columns:
+        df1['TARGET'] = df['TARGET']
+    return df1
