@@ -2,9 +2,9 @@
 FROM python:3.10
 
 # Copy the MLflow model to the container
-COPY ../notebooks/custom_model /custom_model
+COPY ../notebooks/production_model /production_model
 
-RUN pip install -r /custom_model/requirements.txt
+RUN pip install -r /production_model/requirements.txt
 
 # Expose the default port for MLflow
 EXPOSE 5000

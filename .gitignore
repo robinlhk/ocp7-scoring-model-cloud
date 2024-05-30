@@ -157,3 +157,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 /docs/P7_DS_Guide_Mentorat.pdf
+azure_service_principal.bash

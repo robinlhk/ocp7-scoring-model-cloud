@@ -26,6 +26,11 @@ There are 7 different sources of data:
 
 https://www.kaggle.com/code/willkoehrsen/start-here-a-gentle-introduction/notebook
 
+## Deployment of the model on Azure
+
+Suivre ce tutoriel : https://www.youtube.com/watch?v=vVhS3VI9tus
+
+ > "loginServer": "ocp7modelapi1.azurecr.io"
 ## Overview
 
 This is your new Kedro project with Kedro-Viz and PySpark setup, which was generated using `kedro 0.19.3`.
