@@ -2,7 +2,7 @@
 FROM python:3.10
 
 # Copy the MLflow model to the container
-COPY ../notebooks/production_model /production_model
+COPY ../mlruns/production_model /production_model
 
 RUN pip install -r /production_model/requirements.txt
 

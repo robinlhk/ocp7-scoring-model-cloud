@@ -1,7 +1,7 @@
 name: Python CI
 
 on:
-  [push]
+  push:
 
 env:
   AZURE_WEBAPP_NAME: ocp7mdlprod # set this to your application's name
@@ -20,11 +20,19 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install mlflow requests pytest && pip install -r ./notebooks/production_model/requirements.txt
-    - name: Building web app
-      uses: azure/appservice-build@v2
-    - name: Deploy web App using GH Action azure/webapps-deploy
+    - name: Build and package web app
+      run: |
+        # Create a startup script for the MLflow server
+        echo "nohup mlflow models serve -m ./mlruns/production_model -h 0.0.0.0 -p 5000 &" > start_mlflow.sh
+        chmod +x start_mlflow.sh
+        # Archive the web app for deployment
+        zip -r app.zip ./*
+    - name: Deploy web app using azure/webapps-deploy
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        package: app.zip
+    - name: Start MLflow server on Azure
+      run: |
+        ssh azureuser@${{ secrets.AZURE_WEBAPP_HOST }} "bash -s" < ./start_mlflow.sh
