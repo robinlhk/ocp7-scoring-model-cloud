@@ -4,13 +4,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import os
 from dashboard_funcs import histo_chart, request_prediction, read_parquet_from_azure
-from dotenv import load_dotenv
-
-#
-# Function to read Parquet file from Azure Blob Storage
-# load_dotenv()
-#
-# if os.getenv("ENV") == "prod":
 
 AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=ocp7;AccountKey=lxYlW5w50DkmrWxrxopFj9TL9qrBQnjf2NtXTjeoElzRU2GaOV6hcznhASKB3+SJPSeshrlLo/JP+AStm1sHOQ==;EndpointSuffix=core.windows.net"
 AZURE_CONTAINER_NAME="ocp7-datasets"
@@ -18,10 +11,6 @@ viz_test_blob_path = "data/08_reporting/viz_df_test.parquet"
 viz_train_blob_path = "data/08_reporting/viz_df_train.parquet"
 full_train_blob_path = "data/05_model_input/full_df_train.parquet"
 model_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/predict"
-# else:
-#     viz_test_df_path = "data/08_reporting/viz_df_test.parquet"
-#     viz_train_df_path = "data/08_reporting/viz_df_train.parquet"
-#     full_train_df_path = "data/05_model_input/full_train_df.parquet"
 
 st.set_page_config(layout="wide", page_title="Credit Scoring Dashboard", page_icon="📈")
 
@@ -32,17 +21,11 @@ st.markdown(
 select_df_type = st.sidebar.selectbox(
     "Selectionnez le jeu de données", ["Train", "Test"]
 )
-#st.write(read_parquet_from_azure(os.getenv("AZURE_CONTAINER_NAME"), viz_train_blob_path, os.getenv("AZURE_STORAGE_CONNECTION_STRING")))
-# if os.getenv("ENV") == "prod":
+
 if select_df_type == "Train":
     df = read_parquet_from_azure(AZURE_CONTAINER_NAME, viz_train_blob_path, AZURE_STORAGE_CONNECTION_STRING)
 else:
     df = read_parquet_from_azure(AZURE_CONTAINER_NAME, viz_test_blob_path, AZURE_STORAGE_CONNECTION_STRING)
-# else:
-#     if select_df_type == "Train":
-#         df = pd.read_parquet(viz_train_df_path)
-#     else:
-#         df = pd.read_parquet(viz_test_df_path)
 
 selected_id = st.sidebar.selectbox(
     "Selectionnez un identifiant-client", df["SK_ID_CURR"].unique()
@@ -119,21 +102,16 @@ st.markdown(
     r"La probabilité de défaut telle que l'espérance de gain de la banque est positive : $$\mathbb{P}(D)\geq\frac{i}{1+i}$$ ")
 
 if st.button("Prédire la probabilité de défaut du client"):
-    # if os.getenv("ENV") == "prod":
+
     if select_df_type == "Train":
         full_df = read_parquet_from_azure(AZURE_CONTAINER_NAME, full_train_blob_path, AZURE_STORAGE_CONNECTION_STRING)
         selected_full_df = full_df.loc[full_df["SK_ID_CURR"] == selected_id]
         #TODO: implement test data
-# else:
-#     if select_df_type == "Train":
-#         full_df = pd.read_parquet(full_train_df_path)
-#         selected_full_df = full_df.loc[full_df["SK_ID_CURR"] == selected_id]
+
     features = [
         f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
     ]
     df_query = selected_full_df[features]
-    # st.write(df_query)
-    # st.write(selected_full_df)
 
     prediction = request_prediction(
         df_query, model_url=model_api_url
@@ -158,36 +136,3 @@ if st.button("Prédire la probabilité de défaut du client"):
             """,
             unsafe_allow_html=True
         )
-    # st.write("Retour du modèle", prediction)
-    # st.write("Elements envoyés au modèle pour la prédiction", selected_full_df)
-
-
-# def main():
-#     MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
-#
-#     st.title('Test de l\'API de prédiction')
-#
-#     # Load your data into a DataFrame (assuming data.csv is your data file)
-#     df = pd.read_csv('data.csv')
-#
-#     # Display the DataFrame in Streamlit
-#     st.dataframe(df)
-#
-#     predict_btn = st.button('Prédire')
-#     if predict_btn:
-#         data = [[revenu_med, age_med, nb_piece_med, nb_chambre_moy,
-#                  taille_pop, occupation_moy, latitude, longitude]]
-#         pred = None
-#
-#         if api_choice == 'MLflow':
-#             pred = request_prediction(MLFLOW_URI, data)[0] * 100000
-#         elif api_choice == 'Cortex':
-#             pred = request_prediction(CORTEX_URI, data)[0] * 100000
-#         elif api_choice == 'Ray Serve':
-#             pred = request_prediction(RAY_SERVE_URI, data)[0] * 100000
-#         st.write(
-#             'Le prix médian d\'une habitation est de {:.2f}'.format(pred))
-
-# # app.py  import streamlit as st  # Your Streamlit app code here
-# if __name__ == '__main__':
-#     st.set_option('server.enableCORS', True)
