@@ -2,7 +2,7 @@
 FROM python:3.10
 
 # Copy the MLflow model to the container
-COPY ../mlruns/production_model /production_model
+COPY ../Model_API/production_model /production_model
 
 RUN pip install -r /production_model/requirements.txt
 
@@ -10,4 +10,4 @@ RUN pip install -r /production_model/requirements.txt
 EXPOSE 5000
 
 # Serve the model
-CMD ["mlflow", "models", "serve", "-m", "/custom_model", "--env-manager", "local", "-h", "0.0.0.0", "-p", "5000"]
+CMD ["mlflow", "models", "serve", "-m", "/production_model", "--env-manager", "local", "-h", "0.0.0.0", "-p", "5000"]

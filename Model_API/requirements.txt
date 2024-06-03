@@ -1,0 +1,10 @@
+fastapi
+mlflow==2.12.1
+numpy==1.26.4
+pandas==2.1.4
+gunicorn
+uvicorn
+jinja2
+python-multipart
+-r ./production_model/requirements.txt
+
