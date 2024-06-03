@@ -1,0 +1,8 @@
+streamlit
+pandas
+numpy
+requests
+plotly
+azure-storage-blob
+python-dotenv
+pyarrow

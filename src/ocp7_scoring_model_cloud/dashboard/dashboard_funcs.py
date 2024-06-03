@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import requests
+from azure.storage.blob import BlobServiceClient
+from io import BytesIO
 
 def histo_chart(df: pd.DataFrame, column:str, title:str, line_chart:bool, selected_value:float, nbins:int=50):
     fig = go.Figure()
@@ -44,3 +46,9 @@ def request_prediction(data, model_url:str = "http://0.0.0.0:5000/invocations"):
         return predictions
     else:
         return print("Error:", response.status_code, response.text)
+
+def read_parquet_from_azure(container_name, blob_name, connection_string):
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    blob_data = blob_client.download_blob().readall()
+    return pd.read_parquet(BytesIO(blob_data))

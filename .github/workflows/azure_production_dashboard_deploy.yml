@@ -1,4 +1,4 @@
-name: Azure WebApp Model API CI/CD
+name: Azure WebApp Dashboard CI/CD
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
 #        cd ocp7-scoring-model-cloud/Model_API
 #        pytest  # Adjust this if you use a different test framework
 
-    - name: Deploy Model API to Azure Web App
+    - name: Deploy dashboard to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: ocp7-rlhk-modelapi  # Replace with your Azure Web App name
+        app-name: ocp7-rlhk-dashboard  # Replace with your Azure Web App name
         slot-name: production
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./Model_API  # Path to your application folder
+        publish-profile: ${{ secrets.AZURE_DASHBOARD_PUBLISH_PROFILE }}
+        package: ./src/ocp7_scoring_model_cloud/dashboard  # Path to your application folder
