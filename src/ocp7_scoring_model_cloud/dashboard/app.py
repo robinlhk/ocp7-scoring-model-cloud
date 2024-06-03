@@ -161,6 +161,7 @@ if st.button("Prédire la probabilité de défaut du client"):
     # st.write("Retour du modèle", prediction)
     # st.write("Elements envoyés au modèle pour la prédiction", selected_full_df)
 
+
 # def main():
 #     MLFLOW_URI = 'http://127.0.0.1:5000/invocations'
 #
