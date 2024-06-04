@@ -6,5 +6,6 @@ gunicorn
 uvicorn
 jinja2
 python-multipart
+shap
 -r ./production_model/requirements.txt
 
