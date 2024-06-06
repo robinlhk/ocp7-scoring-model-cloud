@@ -1,9 +1,11 @@
 import streamlit as st
 import requests
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 import os
 from dashboard_funcs import histo_chart, request_prediction, read_parquet_from_azure
+import shap
 
 AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=ocp7;AccountKey=lxYlW5w50DkmrWxrxopFj9TL9qrBQnjf2NtXTjeoElzRU2GaOV6hcznhASKB3+SJPSeshrlLo/JP+AStm1sHOQ==;EndpointSuffix=core.windows.net"
 AZURE_CONTAINER_NAME="ocp7-datasets"
@@ -11,8 +13,26 @@ viz_test_blob_path = "data/08_reporting/viz_df_test.parquet"
 viz_train_blob_path = "data/08_reporting/viz_df_train.parquet"
 full_train_blob_path = "data/05_model_input/full_df_train.parquet"
 model_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/predict"
+shap_values_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/explain_local"
 
 st.set_page_config(layout="wide", page_title="Credit Scoring Dashboard", page_icon="📈")
+
+
+@st.cache_data
+def read_data(blob_path, select_id=None, sample_size=.2, columns="All"):
+    # Read the dataframe from Azure
+    df = read_parquet_from_azure(AZURE_CONTAINER_NAME, blob_path, AZURE_STORAGE_CONNECTION_STRING)
+
+    # Select the necessary rows
+    if select_id is not None:
+        df = df[df["SK_ID_CURR"] == select_id]
+    elif select_id is None:
+        if columns != "All":
+            df = df[columns]
+        else:
+            # Sample the dataframe
+            df = df.sample(frac = sample_size, random_state=42)
+    return df
 
 st.sidebar.header("Prêt à Dépenser - Credit Scoring Dashboard")
 st.markdown(
@@ -23,12 +43,14 @@ select_df_type = st.sidebar.selectbox(
 )
 
 if select_df_type == "Train":
-    df = read_parquet_from_azure(AZURE_CONTAINER_NAME, viz_train_blob_path, AZURE_STORAGE_CONNECTION_STRING)
+    df = read_data(viz_train_blob_path, sample_size=1)
+    id_list = read_data(viz_train_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
 else:
     df = read_parquet_from_azure(AZURE_CONTAINER_NAME, viz_test_blob_path, AZURE_STORAGE_CONNECTION_STRING)
+    id_list = read_data(viz_test_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
 
 selected_id = st.sidebar.selectbox(
-    "Selectionnez un identifiant-client", df["SK_ID_CURR"].unique()
+    "Selectionnez un identifiant-client", id_list
 )
 
 available_columns = df.columns.tolist()
@@ -37,7 +59,8 @@ default_columns = [
     x for x in available_columns if x not in ["DAYS_BIRTH", "DAYS_EMPLOYED"]
 ]
 
-selected_row = df.loc[df["SK_ID_CURR"] == selected_id, default_columns]
+selected_row = read_data(viz_train_blob_path, select_id = selected_id)[default_columns]
+selected_full_df = read_data(full_train_blob_path, select_id=selected_id)
 
 st.sidebar.write("Informations sur le client")
 st.sidebar.dataframe(
@@ -48,15 +71,15 @@ st.sidebar.dataframe(
 )
 
 # Define the charts
-selected_age = df.loc[df["SK_ID_CURR"] == selected_id, "AGE"].values[0]
-selected_amt_credit = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_CREDIT"].values[0]
-selected_amt_income_total = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_INCOME_TOTAL"].values[0]
-selected_amt_annuity = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_ANNUITY"].values[0]
-selected_amt_goods_price = df.loc[df["SK_ID_CURR"] == selected_id, "AMT_GOODS_PRICE"].values[0]
-selected_ext_source_1 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_1"].values[0]
-selected_ext_source_2 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_2"].values[0]
-selected_ext_source_3 = df.loc[df["SK_ID_CURR"] == selected_id, "EXT_SOURCE_3"].values[0]
-selected_time_current_job_years = df.loc[df["SK_ID_CURR"] == selected_id, "TIME_CURRENT_JOB_YEARS"].values[0]
+selected_age = selected_row["AGE"].values[0]
+selected_amt_credit = selected_row["AMT_CREDIT"].values[0]
+selected_amt_income_total = selected_row["AMT_INCOME_TOTAL"].values[0]
+selected_amt_annuity = selected_row["AMT_ANNUITY"].values[0]
+selected_amt_goods_price = selected_row["AMT_GOODS_PRICE"].values[0]
+selected_ext_source_1 = selected_row["EXT_SOURCE_1"].values[0]
+selected_ext_source_2 = selected_row["EXT_SOURCE_2"].values[0]
+selected_ext_source_3 = selected_row["EXT_SOURCE_3"].values[0]
+selected_time_current_job_years = selected_row["TIME_CURRENT_JOB_YEARS"].values[0]
 
 fig1 = histo_chart(df, "AGE", "Distribution de l'âge des clients", True, selected_age, nbins=10)
 fig9 = histo_chart(df, "TIME_CURRENT_JOB_YEARS", "Distribution de l'ancienneté dans l'emploi", True,
@@ -90,24 +113,19 @@ interest_rate = (
         st.slider(
             "Sélectionnez le taux d'intérêt moyen (en %)",
             min_value=0.0,
-            max_value=10.0,
-            value=5.0,
-            step=0.1,
+            max_value=20.0,
+            value=10.0,
+            step=0.5,
         )
         / 100
 )
+
 acceptable_proba = interest_rate / (1 + interest_rate)
 
 st.markdown(
     r"La probabilité de défaut telle que l'espérance de gain de la banque est positive : $$\mathbb{P}(D)\geq\frac{i}{1+i}$$ ")
-
+st.write(f"Pour un taux d'intérêt de {interest_rate * 100}%, la probabilité de défaut acceptable est de {round(acceptable_proba * 100, 2)}%.")
 if st.button("Prédire la probabilité de défaut du client"):
-
-    if select_df_type == "Train":
-        full_df = read_parquet_from_azure(AZURE_CONTAINER_NAME, full_train_blob_path, AZURE_STORAGE_CONNECTION_STRING)
-        selected_full_df = full_df.loc[full_df["SK_ID_CURR"] == selected_id]
-        #TODO: implement test data
-
     features = [
         f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
     ]
@@ -119,7 +137,7 @@ if st.button("Prédire la probabilité de défaut du client"):
     proba_non_default = round(prediction["prediction"][0][0], 2)
     proba_default = round(prediction["prediction"][0][1], 3)
     st.write(
-        f"""D'après le modèle, la probabilité de défaut du client est de {proba_default * 100}%."""
+        f"""D'après le modèle, la probabilité de défaut du client est de {round(proba_default * 100, 1)}%."""
     )
     if proba_default > acceptable_proba:
         st.markdown(
@@ -136,3 +154,21 @@ if st.button("Prédire la probabilité de défaut du client"):
             """,
             unsafe_allow_html=True
         )
+# def request_shap_values(df_query, shap_url):
+#     data = {'dataframe_records': df_query.to_dict(orient = 'records')}
+#     response = requests.post(shap_url, json=data)
+#     if response.status_code == 200:
+#         shap_values = response.json()
+#         return shap_values
+#     else:
+#         return print("Error:", response.status_code, response.text)
+# features = [
+#         f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
+#     ]
+# df_query = selected_full_df[features]
+# if st.button("Request shape values from the model API"):
+#     shap_values = request_shap_values(
+#         df_query, shap_url="http://127.0.0.1:8000/explain_local"
+#     )
+#     st.write(np.array(shap_values))
+#     st.write(shap.plots.waterfall(np.array(shap_values)))

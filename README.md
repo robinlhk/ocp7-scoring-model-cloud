@@ -1,8 +1,15 @@
 # ocp7_scoring_model_cloud
 
+![img_1.png](img_1.png)
+
 ## Presentation 
 
-This is an OpenClassrooms Data Science project: "deploy a credit scoring in the cloud". The purpose of the project is to create a credit scoring machine learning model, to monitor it using MLOps techniques, then to create a dashboard to visualize the results. 
+This is an OpenClassrooms Data Science project: "deploy a credit scoring model in the cloud". The purpose of the project is to create a credit scoring machine learning model, to monitor it using MLOps techniques, then to create a dashboard to visualize the results. 
+
+The model currently in production is available at the following address: https://ocp7-rlhk-modelapi.azurewebsites.net/docs
+
+The dashboard is available at the following address: https://ocp7-scoring-model-cloud-rlhk.streamlit.app/
+
 
 ## Data comes from "Home Credit Default Risk" Kaggle Dataset
 
@@ -26,18 +33,17 @@ There are 7 different sources of data:
 
 https://www.kaggle.com/code/willkoehrsen/start-here-a-gentle-introduction/notebook
 
-## Deployment of the model on Azure
+---
 
-Suivre ce tutoriel : https://www.youtube.com/watch?v=vVhS3VI9tus
+---
 
- > "loginServer": "ocp7modelapi1.azurecr.io"
-## Overview
+## This project has been developed using Kedro
 
 This is your new Kedro project with Kedro-Viz and PySpark setup, which was generated using `kedro 0.19.3`.
 
 Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
 
-## Rules and guidelines
+### Rules and guidelines
 
 In order to get the best out of the template:
 
@@ -46,7 +52,7 @@ In order to get the best out of the template:
 * Don't commit data to your repository
 * Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
 
-## How to install dependencies
+### How to install dependencies
 
 Declare any dependencies in `requirements.txt` for `pip` installation.
 
@@ -56,7 +62,7 @@ To install them, run:
 pip install -r requirements.txt
 ```
 
-## How to run your Kedro pipeline
+### How to run your Kedro pipeline
 
 You can run your Kedro project with:
 
@@ -64,7 +70,7 @@ You can run your Kedro project with:
 kedro run
 ```
 
-## How to test your Kedro project
+### How to test your Kedro project
 
 Have a look at the files `src/tests/test_run.py` and `src/tests/pipelines/test_data_science.py` for instructions on how to write your tests. Run the tests as follows:
 
@@ -74,19 +80,19 @@ pytest
 
 To configure the coverage threshold, look at the `.coveragerc` file.
 
-## Project dependencies
+### Project dependencies
 
 To see and update the dependency requirements for your project use `requirements.txt`. Install the project requirements with `pip install -r requirements.txt`.
 
 [Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
 
-## How to work with Kedro and notebooks
+### How to work with Kedro and notebooks
 
 > Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `catalog`, `context`, `pipelines` and `session`.
 >
 > Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
 
-### Jupyter
+#### Jupyter
 To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
 
 ```
@@ -99,7 +105,7 @@ After installing Jupyter, you can start a local notebook server:
 kedro jupyter notebook
 ```
 
-### JupyterLab
+#### JupyterLab
 To use JupyterLab, you need to install it:
 
 ```
@@ -112,18 +118,18 @@ You can also start JupyterLab:
 kedro jupyter lab
 ```
 
-### IPython
+#### IPython
 And if you want to run an IPython session:
 
 ```
 kedro ipython
 ```
 
-### How to ignore notebook output cells in `git`
+#### How to ignore notebook output cells in `git`
 To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
 
 > *Note:* Your output cells will be retained locally.
 
-## Package your Kedro project
+### Package your Kedro project
 
 [Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
