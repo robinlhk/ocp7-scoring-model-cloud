@@ -9,7 +9,7 @@ on:
       - main  # Change this to the branch you want to trigger the workflow on
 
 jobs:
-  build-and-deploy:
+  test-and-deploy_model_api:
     runs-on: ubuntu-latest
 
     steps:
