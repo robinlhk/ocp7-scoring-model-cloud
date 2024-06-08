@@ -1,6 +1,6 @@
 # ocp7_scoring_model_cloud
 
-![img_1.png](img_1.png)
+![img_1.png](images/img_1.png)
 
 ## Presentation 
 
