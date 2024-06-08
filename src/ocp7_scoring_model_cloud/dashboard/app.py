@@ -11,6 +11,7 @@ AZURE_CONTAINER_NAME="ocp7-datasets"
 viz_test_blob_path = "data/08_reporting/viz_df_test.parquet"
 viz_train_blob_path = "data/08_reporting/viz_df_train.parquet"
 full_train_blob_path = "data/05_model_input/full_df_train.parquet"
+full_test_blob_path = "data/05_model_input/full_df_test.parquet"
 model_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/predict"
 shap_values_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/explain_local"
 
@@ -42,11 +43,13 @@ select_df_type = st.sidebar.selectbox(
 )
 
 if select_df_type == "Train":
-    df = read_data(viz_train_blob_path, sample_size=1)
-    id_list = read_data(viz_train_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
+    df = read_data(viz_train_blob_path, sample_size=.1)
+    id_list = df["SK_ID_CURR"].unique()
+    # id_list = read_data(viz_train_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
 else:
-    df = read_parquet_from_azure(AZURE_CONTAINER_NAME, viz_test_blob_path, AZURE_STORAGE_CONNECTION_STRING)
-    id_list = read_data(viz_test_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
+    df = read_data(viz_test_blob_path, sample_size=.1)
+    # id_list = read_data(viz_test_blob_path, columns=["SK_ID_CURR"])["SK_ID_CURR"].unique()
+    id_list = df["SK_ID_CURR"].unique()
 
 selected_id = st.sidebar.selectbox(
     "Selectionnez un identifiant-client", id_list
@@ -58,8 +61,12 @@ default_columns = [
     x for x in available_columns if x not in ["DAYS_BIRTH", "DAYS_EMPLOYED"]
 ]
 
-selected_row = read_data(viz_train_blob_path, select_id = selected_id)[default_columns]
-selected_full_df = read_data(full_train_blob_path, select_id=selected_id)
+selected_row = df.loc[df["SK_ID_CURR"]==selected_id][default_columns]
+
+if select_df_type == "Train":
+    selected_full_df = read_data(full_train_blob_path, select_id=selected_id)
+else:
+    selected_full_df = read_data(full_test_blob_path, select_id=selected_id)
 
 st.sidebar.write("Informations sur le client")
 st.sidebar.dataframe(
@@ -68,45 +75,6 @@ st.sidebar.dataframe(
     ),
     hide_index=True,
 )
-
-# Define the charts
-selected_age = selected_row["AGE"].values[0]
-selected_amt_credit = selected_row["AMT_CREDIT"].values[0]
-selected_amt_income_total = selected_row["AMT_INCOME_TOTAL"].values[0]
-selected_amt_annuity = selected_row["AMT_ANNUITY"].values[0]
-selected_amt_goods_price = selected_row["AMT_GOODS_PRICE"].values[0]
-selected_ext_source_1 = selected_row["EXT_SOURCE_1"].values[0]
-selected_ext_source_2 = selected_row["EXT_SOURCE_2"].values[0]
-selected_ext_source_3 = selected_row["EXT_SOURCE_3"].values[0]
-selected_time_current_job_years = selected_row["TIME_CURRENT_JOB_YEARS"].values[0]
-
-fig1 = histo_chart(df, "AGE", "Distribution de l'âge des clients", True, selected_age, nbins=10)
-fig9 = histo_chart(df, "TIME_CURRENT_JOB_YEARS", "Distribution de l'ancienneté dans l'emploi", True,
-                   selected_time_current_job_years, nbins=30)
-fig2 = histo_chart(df, "AMT_CREDIT", "Distribution du montant du crédit", True, selected_amt_credit, nbins=50)
-fig3 = histo_chart(df, "AMT_INCOME_TOTAL", "Distribution du revenu total", True, selected_amt_income_total, nbins=100)
-fig4 = histo_chart(df, "AMT_ANNUITY", "Distribution de l'annuité", True, selected_amt_annuity, nbins=30)
-fig5 = histo_chart(df, "AMT_GOODS_PRICE", "Distribution du prix des biens", True, selected_amt_goods_price, nbins=50)
-fig6 = histo_chart(df, "EXT_SOURCE_1", "Distribution de l'EXT_SOURCE_1", True, selected_ext_source_1, nbins=50)
-fig7 = histo_chart(df, "EXT_SOURCE_2", "Distribution de l'EXT_SOURCE_2", True, selected_ext_source_2, nbins=50)
-fig8 = histo_chart(df, "EXT_SOURCE_3", "Distribution de l'EXT_SOURCE_3", True, selected_ext_source_3, nbins=50)
-
-expander1 = st.expander(
-    "📈 Statistiques descriptives : le client dans l'ensemble de la population",
-    expanded=False,
-)
-col1, col2 = expander1.columns(2, gap="small")
-# Display the selected row
-
-col1.plotly_chart(fig1)
-col2.plotly_chart(fig2)
-col1.plotly_chart(fig3)
-col2.plotly_chart(fig4)
-col1.plotly_chart(fig5)
-col2.plotly_chart(fig6)
-col1.plotly_chart(fig7)
-col2.plotly_chart(fig8)
-col1.plotly_chart(fig9)
 
 interest_rate = (
         st.slider(
@@ -153,21 +121,42 @@ if st.button("Prédire la probabilité de défaut du client"):
             """,
             unsafe_allow_html=True
         )
-# def request_shap_values(df_query, shap_url):
-#     data = {'dataframe_records': df_query.to_dict(orient = 'records')}
-#     response = requests.post(shap_url, json=data)
-#     if response.status_code == 200:
-#         shap_values = response.json()
-#         return shap_values
-#     else:
-#         return print("Error:", response.status_code, response.text)
-# features = [
-#         f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
-#     ]
-# df_query = selected_full_df[features]
-# if st.button("Request shape values from the model API"):
-#     shap_values = request_shap_values(
-#         df_query, shap_url="http://127.0.0.1:8000/explain_local"
-#     )
-#     st.write(np.array(shap_values))
-#     st.write(shap.plots.waterfall(np.array(shap_values)))
+
+# Define the charts
+selected_age = selected_row["AGE"].values[0]
+selected_amt_credit = selected_row["AMT_CREDIT"].values[0]
+selected_amt_income_total = selected_row["AMT_INCOME_TOTAL"].values[0]
+selected_amt_annuity = selected_row["AMT_ANNUITY"].values[0]
+selected_amt_goods_price = selected_row["AMT_GOODS_PRICE"].values[0]
+selected_ext_source_1 = selected_row["EXT_SOURCE_1"].values[0]
+selected_ext_source_2 = selected_row["EXT_SOURCE_2"].values[0]
+selected_ext_source_3 = selected_row["EXT_SOURCE_3"].values[0]
+selected_time_current_job_years = selected_row["TIME_CURRENT_JOB_YEARS"].values[0]
+
+fig1 = histo_chart(df, "AGE", "Distribution de l'âge des clients", True, selected_age, nbins=10)
+fig9 = histo_chart(df, "TIME_CURRENT_JOB_YEARS", "Distribution de l'ancienneté dans l'emploi", True,
+                   selected_time_current_job_years, nbins=30)
+fig2 = histo_chart(df, "AMT_CREDIT", "Distribution du montant du crédit", True, selected_amt_credit, nbins=50)
+fig3 = histo_chart(df, "AMT_INCOME_TOTAL", "Distribution du revenu total", True, selected_amt_income_total, nbins=100)
+fig4 = histo_chart(df, "AMT_ANNUITY", "Distribution de l'annuité", True, selected_amt_annuity, nbins=30)
+fig5 = histo_chart(df, "AMT_GOODS_PRICE", "Distribution du prix des biens", True, selected_amt_goods_price, nbins=50)
+fig6 = histo_chart(df, "EXT_SOURCE_1", "Distribution de l'EXT_SOURCE_1", True, selected_ext_source_1, nbins=50)
+fig7 = histo_chart(df, "EXT_SOURCE_2", "Distribution de l'EXT_SOURCE_2", True, selected_ext_source_2, nbins=50)
+fig8 = histo_chart(df, "EXT_SOURCE_3", "Distribution de l'EXT_SOURCE_3", True, selected_ext_source_3, nbins=50)
+
+expander1 = st.expander(
+    "📈 Statistiques descriptives : le client dans l'ensemble de la population",
+    expanded=False,
+)
+col1, col2 = expander1.columns(2, gap="small")
+# Display the selected row
+
+col1.plotly_chart(fig1)
+col2.plotly_chart(fig2)
+col1.plotly_chart(fig3)
+col2.plotly_chart(fig4)
+col1.plotly_chart(fig5)
+col2.plotly_chart(fig6)
+col1.plotly_chart(fig7)
+col2.plotly_chart(fig8)
+col1.plotly_chart(fig9)
