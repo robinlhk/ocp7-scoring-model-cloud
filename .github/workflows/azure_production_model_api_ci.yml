@@ -28,7 +28,6 @@ jobs:
 
     - name: Run tests
       run: |
-        cd /
         pytest  # Adjust this if you use a different test framework
 
     - name: Deploy Model API to Azure Web App
