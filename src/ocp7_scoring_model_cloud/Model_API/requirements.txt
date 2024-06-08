@@ -7,5 +7,6 @@ uvicorn
 jinja2
 python-multipart
 shap
+pytest
 -r ./production_model/requirements.txt
 
