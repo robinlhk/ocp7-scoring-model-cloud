@@ -5,7 +5,6 @@ import numpy as np
 import plotly.graph_objects as go
 import os
 from dashboard_funcs import histo_chart, request_prediction, read_parquet_from_azure
-import shap
 
 AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=ocp7;AccountKey=lxYlW5w50DkmrWxrxopFj9TL9qrBQnjf2NtXTjeoElzRU2GaOV6hcznhASKB3+SJPSeshrlLo/JP+AStm1sHOQ==;EndpointSuffix=core.windows.net"
 AZURE_CONTAINER_NAME="ocp7-datasets"
