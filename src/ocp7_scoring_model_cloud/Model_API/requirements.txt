@@ -8,5 +8,6 @@ jinja2
 python-multipart
 shap
 pytest
+pytest-cov
 -r ./production_model/requirements.txt
 
