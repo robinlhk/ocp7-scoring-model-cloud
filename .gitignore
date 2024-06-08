@@ -158,3 +158,4 @@ venv.bak/
 .mypy_cache/
 /docs/P7_DS_Guide_Mentorat.pdf
 azure_service_principal.bash
+/src/ocp7_scoring_model_cloud/dashboard/.streamlit/secrets.toml
