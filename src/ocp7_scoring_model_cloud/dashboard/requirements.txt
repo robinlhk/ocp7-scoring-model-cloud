@@ -6,4 +6,3 @@ plotly
 azure-storage-blob
 python-dotenv
 pyarrow
-io
