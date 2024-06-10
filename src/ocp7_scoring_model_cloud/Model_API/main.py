@@ -41,19 +41,26 @@ async def predict(input_data: InputData): # we could use InputData with a Pydant
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# @app.post("/explain_local")
-# async def shap_values(input_data: InputData): # we could use InputData with a Pydantic model based on mlflow signature
-#     try:
-#         # Convert input data to DataFrame
-#         data_df = pd.DataFrame(input_data.dataframe_records)
-#
-#         # Get prediction from the model
-#         shap_values = explainer(data_df)
-#
-#         # Return the prediction as a response
-#         return {"shap_values": shap_values.values.tolist()}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+@app.post("/explain_local")
+async def shap_values(input_data: InputData): # we could use InputData with a Pydantic model based on mlflow signature
+    try:
+        # Convert input data to DataFrame
+        data_df = pd.DataFrame(input_data.dataframe_records)
+
+        # Get prediction from the model
+        shap_values = explainer(data_df)
+
+        shap_values_response = {
+            "base_values": shap_values.base_values.tolist(),
+            "values": shap_values.values.tolist(),
+            "data": shap_values.data.tolist(),
+            "feature_names": data_df.columns.tolist()
+        }
+
+        # Return the SHAP values as a response
+        return shap_values_response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == '__main__':
     uvicorn.run('myapp:app', host='0.0.0.0', port=8000)

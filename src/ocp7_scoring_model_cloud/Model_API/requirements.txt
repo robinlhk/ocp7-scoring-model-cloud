@@ -9,5 +9,6 @@ python-multipart
 shap
 pytest
 pytest-cov
+shap
 -r ./production_model/requirements.txt
 

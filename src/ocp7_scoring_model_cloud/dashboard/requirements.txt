@@ -6,3 +6,6 @@ plotly
 azure-storage-blob
 python-dotenv
 pyarrow
+shap
+streamlit_shap
+matplotlib==3.4.3

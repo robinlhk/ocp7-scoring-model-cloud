@@ -9,18 +9,31 @@ def histo_chart(df: pd.DataFrame, column:str, title:str, line_chart:bool, select
     fig = go.Figure()
     fig.add_trace(
         go.Histogram(
-            x=df[column],
+            x=df.loc[df["TARGET"]==1,column],
             histnorm="probability",
             nbinsx=nbins,
             #xbins=dict(start=0.0, end=df["AGE"].max(), size=5),
             opacity=0.8,
+            name="Défaut",
+            marker_color="red"
+        )
+    )
+    fig.add_trace(
+        go.Histogram(
+            x=df.loc[df["TARGET"] == 0, column],
+            histnorm="probability",
+            nbinsx=nbins,
+            # xbins=dict(start=0.0, end=df["AGE"].max(), size=5),
+            opacity=0.8,
+            name= "Non défaut",
+            marker_color="green"
         )
     )
     if line_chart:
         fig.add_vline(
             x=selected_value,
             line_dash="dash",
-            line_color="green",
+            line_color="blue",
             annotation_text="Client sélectionné",
         )
     fig.update_layout(
@@ -46,6 +59,8 @@ def request_prediction(data, model_url:str = "http://0.0.0.0:5000/invocations"):
         return predictions
     else:
         return print("Error:", response.status_code, response.text)
+
+
 
 def read_parquet_from_azure(container_name, blob_name, connection_string):
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
