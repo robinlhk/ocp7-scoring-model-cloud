@@ -15,7 +15,7 @@ viz_train_blob_path = "data/08_reporting/viz_df_train.parquet"
 full_train_blob_path = "data/05_model_input/full_df_train.parquet"
 full_test_blob_path = "data/05_model_input/full_df_test.parquet"
 model_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/predict"
-shap_values_api_url = "http://127.0.0.1:8000/explain_local" #"https://ocp7-rlhk-modelapi.azurewebsites.net/explain_local"
+shap_values_api_url = "https://ocp7-rlhk-modelapi.azurewebsites.net/explain_local" #"http://127.0.0.1:8000/explain_local"
 
 st.set_page_config(layout="wide", page_title="Credit Scoring Dashboard", page_icon="📈")
 
@@ -39,7 +39,7 @@ def read_data(blob_path, select_id=None, sample_size=.4, columns="All"):
 st.sidebar.header("Prêt à Dépenser - Credit Scoring Dashboard")
 st.title("Credit Scoring Dashboard 📈")
 st.markdown(
-    "L'objectif de ce dashboard est de visualiser les données des clients et de déterminer un score de solvabilité (credit score)."
+    "L'objectif de ce dashboard est de visualiser les données des clients et de déterminer une probabilité de défaut de paiement."
 )
 select_df_type = st.sidebar.selectbox(
     "Selectionnez le jeu de données", ["Train"]
@@ -149,7 +149,7 @@ st.header("Prédiction de la probabilité de défaut du client et interprétabil
 st.write("Cette section permet de prédire la probabilité de défaut du client et d'interpréter les résultats. Le graphique de SHAP (SHapley Additive exPlanations) permet de visualiser l'importance des variables dans la prédiction. ")
 st.write("Lecture graphique : les variables en bleu diminuent la probabilité de défaut, tandis que celles en rouge l'augmentent. Les variables les plus importantes sont en haut du graphique.")
 
-if st.button("Prédire la probabilité de défaut du client"):
+if st.button("Prédire la probabilité de défaut du client et visualiser les SHAP values"):
     features = [
         f for f in selected_full_df.columns if f not in ["SK_ID_CURR", "TARGET"]
     ]
