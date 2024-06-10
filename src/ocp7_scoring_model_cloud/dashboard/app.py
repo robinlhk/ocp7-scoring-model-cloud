@@ -90,7 +90,7 @@ interest_rate = (
 acceptable_proba = interest_rate / (1 + interest_rate)
 
 st.markdown(
-    r"La probabilité de défaut telle que l'espérance de gain de la banque est positive : $$\mathbb{P}(D)\geq\frac{i}{1+i}$$ ")
+    r"La probabilité de défaut telle que l'espérance de gain de la banque est positive : $$\mathbb{P}(D)\neq\frac{i}{1+i}$$ ")
 st.write(f"Pour un taux d'intérêt de {interest_rate * 100}%, la probabilité de défaut acceptable est de {round(acceptable_proba * 100, 2)}%.")
 if st.button("Prédire la probabilité de défaut du client"):
     features = [
