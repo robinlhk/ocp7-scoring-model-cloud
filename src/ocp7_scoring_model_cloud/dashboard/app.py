@@ -116,7 +116,7 @@ col1, col2 = expander1.columns(2, gap="small")
 
 col1.plotly_chart(fig1)
 col2.plotly_chart(fig2)
-col1.plotly_chart(fig3)
+#col1.plotly_chart(fig3)
 col2.plotly_chart(fig4)
 col1.plotly_chart(fig5)
 col2.plotly_chart(fig6)
